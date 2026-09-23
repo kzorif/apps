@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Generates privacy + support pages per app into ./docs/<slug>/, in the app's own design language.
 Static, system fonts only, no scripts, no trackers (a privacy page that phones home would be a joke).
-Usage: _page.py <slug> "<App Name>" "<one-line what it is>" --theme nocturne|braun [--third-party "<credit line>"]"""
+Usage: _page.py <slug> "<App Name>" "<one-line what it is>" --theme nocturne|braun [--third-party "<credit line>"] [--access "<mic/camera/photos sentence>"] [--subscription]"""
 import os, sys, datetime
 slug, name, blurb = sys.argv[1], sys.argv[2], sys.argv[3]
 theme = sys.argv[sys.argv.index("--theme") + 1] if "--theme" in sys.argv else "braun"
+access = sys.argv[sys.argv.index("--access") + 1] if "--access" in sys.argv else ""
+sub = "--subscription" in sys.argv
 third = sys.argv[sys.argv.index("--third-party") + 1] if "--third-party" in sys.argv else ""
 today = datetime.date.today().strftime("%-d %B %Y"); email = "khzorif@gmail.com"
 THEMES = {
@@ -36,6 +38,7 @@ def page(title, eyebrow, body):
 <footer>Firoz Khan · <a href='mailto:{email}'>{email}</a> · {today}</footer></body></html>"""
 privacy = page("Privacy", THEMES["eyebrow_privacy"], f"""
 <h2>What {name.split(':')[0]} collects</h2><p>Nothing. There is no account, no analytics, no advertising and no tracking. Nothing you do in the app is sent anywhere. It stays on your device.</p>
+{f"<h2>What it uses on your iPhone</h2><p>{access} None of it is ever sent to us, and you can turn access off at any time in Settings.</p>" if access else ""}
 <h2>Purchases</h2><p>In-app purchases are handled by Apple. We receive no personal information about you from a purchase.</p>
 <h2>Apple services</h2><p>Where the app shows maps or street-level imagery, Apple Maps loads them under <a href='https://www.apple.com/legal/privacy/'>Apple's privacy policy</a>. Siri and Shortcuts, where offered, run on your device.</p>
 {'<h2>Third-party content</h2><p>' + third + '</p>' if third else ''}
@@ -43,7 +46,7 @@ privacy = page("Privacy", THEMES["eyebrow_privacy"], f"""
 <h2>Contact</h2><p>Questions about privacy? Email <a href='mailto:{email}'>{email}</a>.</p>""")
 support = page("Support", THEMES["eyebrow_support"], f"""
 <h2>Get help</h2><p>Email <a href='mailto:{email}'>{email}</a> and say which app and which iPhone. Replies within a few days.</p>
-<h2>Purchases</h2><p>To restore a purchase on a new device, open the app's settings or paywall and tap <strong>Restore purchases</strong>. Refunds are handled by Apple at <a href='https://reportaproblem.apple.com'>reportaproblem.apple.com</a>.</p>
+<h2>Purchases</h2><p>To restore a purchase on a new device, open the app's settings or paywall and tap <strong>Restore purchases</strong>. {"To cancel a subscription, open Settings → your name → Subscriptions on your iPhone; it stays active until the end of the period you paid for. " if sub else ""}Refunds are handled by Apple at <a href='https://reportaproblem.apple.com'>reportaproblem.apple.com</a>.</p>
 {THEMES['divider']}
 <h2>Privacy</h2><p><a href='privacy.html'>Read the privacy policy</a>.</p>""")
 os.makedirs(f"docs/{slug}", exist_ok=True)

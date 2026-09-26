@@ -12,13 +12,20 @@
 set -e
 APP="$(cd "${1:-.}" && pwd)"; SLUG=$(basename "$APP"); M="$APP/handoff/metadata/en-US"
 PAGES="$HOME/Apps/_kit/pages"; source "$HOME/Apps/_kit/scripts/env.sh"
-NAME=$(cat "$M/name.txt"); BLURB=$(cat "$M/subtitle.txt"); THEME=$(cat "$M/pages_theme.txt" 2>/dev/null || echo braun)
-ARGS=(--theme "$THEME")
+NAME=$(cat "$M/name.txt"); BLURB=$(cat "$M/subtitle.txt")
+# Operator rule 2026-09-26: the pages must match the app's aesthetic. pages_tokens.json (colours + the app's
+# own fonts, from its theme file / DESIGN.md) is the normal path; pages_theme.txt names a hand-made theme.
+# No silent default any more: ten apps shipped generic white Braun pages that way.
+if [ -f "$M/pages_tokens.json" ]; then ARGS=(--tokens "$M/pages_tokens.json")
+elif [ -f "$M/pages_theme.txt" ]; then ARGS=(--theme "$(cat "$M/pages_theme.txt")")
+else echo "pages: write $M/pages_tokens.json from the app's theme (bg, fg, muted, accent, line, fonts) — pages must match the app's look"; exit 1; fi
 if [ -f "$M/privacy_access.txt" ]; then ARGS+=(--access "$(cat "$M/privacy_access.txt")")
 elif grep -rqs "UsageDescription" "$APP/project.yml" "$APP"/Sources/*/Info.plist; then
   echo "pages: app declares a permission (UsageDescription) but $M/privacy_access.txt is missing — write one sentence saying what it uses and why"; exit 1
 fi
 grep -qs "recurringSubscriptionPeriod" "$APP"/Sources/*/*.storekit && ARGS+=(--subscription)
+grep -rqsE "^import MapKit|Map\(|MKMapView|LookAround" "$APP/Sources" && ARGS+=(--maps)
+grep -rqsE "^import AppIntents|AppShortcutsProvider" "$APP/Sources" && ARGS+=(--intents)
 
 # one publisher at a time (parallel drills); a separate lock from the ledger lock, because
 # handoff.sh already runs under that one
@@ -26,6 +33,14 @@ exec 9>"$PAGES/.publish.lock"; /usr/bin/python3 -c 'import fcntl; fcntl.flock(9,
 cd "$PAGES"
 git pull -q --rebase
 python3 _page.py "$SLUG" "$NAME" "$BLURB" "${ARGS[@]}" >/dev/null
+# self-host the fonts the tokens name (copied from the app's own bundle; OFL/licensed with the app)
+if [ -f "$M/pages_tokens.json" ]; then
+  for f in $(/usr/bin/python3 -c "import json,sys; print(' '.join(v['file'] for v in json.load(open(sys.argv[1])).get('fonts',{}).values() if v.get('file')))" "$M/pages_tokens.json"); do
+    src=$(find "$APP/Sources" "$APP/Resources" -name "$f" 2>/dev/null | head -1)
+    [ -n "$src" ] || { echo "pages: font $f named in pages_tokens.json not found in the app"; exit 1; }
+    mkdir -p "docs/$SLUG/fonts"; cp "$src" "docs/$SLUG/fonts/"
+  done
+fi
 git add "docs/$SLUG"
 if git diff --cached --quiet; then echo "pages: $SLUG unchanged"
 else git commit -qm "pages: $SLUG" && git push -q && echo "pages: $SLUG pushed"; fi

@@ -23,6 +23,8 @@ if [ -f "$M/privacy_access.txt" ]; then ARGS+=(--access "$(cat "$M/privacy_acces
 elif grep -rqs "UsageDescription" "$APP/project.yml" "$APP"/Sources/*/Info.plist; then
   echo "pages: app declares a permission (UsageDescription) but $M/privacy_access.txt is missing — write one sentence saying what it uses and why"; exit 1
 fi
+[ -f "$M/privacy_body.html" ] && ARGS+=(--privacy-html "$M/privacy_body.html")
+[ -f "$APP/mac.env" ] && ARGS+=(--mac)
 grep -qs "recurringSubscriptionPeriod" "$APP"/Sources/*/*.storekit && ARGS+=(--subscription)
 grep -qs "ServerKit" "$APP/project.yml" && ARGS+=(--server)
 grep -rqsE "^import MapKit|MKMapView|LookAround" "$APP/Sources" && ARGS+=(--maps)

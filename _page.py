@@ -13,6 +13,8 @@ maps, intents = "--maps" in sys.argv, "--intents" in sys.argv
 apple = ("<h2>Apple services</h2><p>" + ("Maps and street-level imagery are loaded by Apple Maps under <a href='https://www.apple.com/legal/privacy/'>Apple's privacy policy</a>. " if maps else "")
          + ("Siri and Shortcuts run on your device. " if intents else "") + "</p>") if (maps or intents) else ""
 third = sys.argv[sys.argv.index("--third-party") + 1] if "--third-party" in sys.argv else ""
+mac = "--mac" in sys.argv   # Mac apps: 'Mac' not 'iPhone' in the support text (2026-10-04, Mizzle)
+body_file = sys.argv[sys.argv.index("--privacy-html") + 1] if "--privacy-html" in sys.argv else ""   # app-specific privacy body (replaces the generic block)
 today = datetime.date.today().strftime("%-d %B %Y"); email = "khzorif@gmail.com"
 THEMES = {
  "nocturne": dict(  # visconti-atelier, Nocturne: rare-book on black, gold as rule and label
@@ -74,7 +76,7 @@ def page(title, eyebrow, body):
 <div class=eyebrow>{eyebrow}</div><h1>{name}</h1><p class=lead>{blurb}</p>{body}
 <footer>Firoz Khan · <a href='mailto:{email}'>{email}</a> · {today}</footer></body></html>"""
 privacy = page("Privacy", THEMES["eyebrow_privacy"], f"""
-{SERVER_BLOCK if server else f"<h2>What {name.split(':')[0]} collects</h2><p>Nothing. There is no account, no analytics, no advertising and no tracking. Nothing you do in the app is sent anywhere. It stays on your device.</p>"}
+{open(body_file).read().replace("{{NAME}}", name.split(':')[0]) if body_file else SERVER_BLOCK if server else f"<h2>What {name.split(':')[0]} collects</h2><p>Nothing. There is no account, no analytics, no advertising and no tracking. Nothing you do in the app is sent anywhere. It stays on your device.</p>"}
 {f"<h2>What it uses on your iPhone</h2><p>{access} None of it is ever sent to us, and you can turn access off at any time in Settings.</p>" if access else ""}
 <h2>Purchases</h2><p>In-app purchases are handled by Apple. We receive no personal information about you from a purchase.</p>
 {apple}
@@ -82,8 +84,8 @@ privacy = page("Privacy", THEMES["eyebrow_privacy"], f"""
 {THEMES['divider']}
 <h2>Contact</h2><p>Questions about privacy? Email <a href='mailto:{email}'>{email}</a>.</p>""")
 support = page("Support", THEMES["eyebrow_support"], f"""
-<h2>Get help</h2><p>Email <a href='mailto:{email}'>{email}</a> and say which app and which iPhone. Replies within a few days.</p>
-<h2>Purchases</h2><p>To restore a purchase on a new device, open the app's settings or paywall and tap <strong>Restore purchases</strong>. {"To cancel a subscription, open Settings → your name → Subscriptions on your iPhone; it stays active until the end of the period you paid for. " if sub else ""}Refunds are handled by Apple at <a href='https://reportaproblem.apple.com'>reportaproblem.apple.com</a>.</p>
+<h2>Get help</h2><p>Email <a href='mailto:{email}'>{email}</a> and say which app and which {'Mac' if mac else 'iPhone'}. Replies within a few days.</p>
+<h2>Purchases</h2><p>To restore a purchase on a new device, open the app's settings or paywall and tap <strong>Restore purchases</strong>. {("To cancel a subscription, " + ("open the App Store, click your name, then Account Settings and Subscriptions;" if mac else "open Settings → your name → Subscriptions on your iPhone;") + " it stays active until the end of the period you paid for. ") if sub else ""}Refunds are handled by Apple at <a href='https://reportaproblem.apple.com'>reportaproblem.apple.com</a>.</p>
 {THEMES['divider']}
 <h2>Privacy</h2><p><a href='privacy.html'>Read the privacy policy</a>.</p>""")
 os.makedirs(f"docs/{slug}", exist_ok=True)

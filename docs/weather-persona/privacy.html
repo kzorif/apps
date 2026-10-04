@@ -1,0 +1,30 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Privacy · Mizzle: Weather With a Voice</title><style>body{background:#F4EFE3;color:#1B2430;font:17px/1.6 Georgia,'Iowan Old Style',serif;max-width:620px;margin:0 auto;padding:56px 22px}
+h1{overflow-wrap:anywhere;font-family:Georgia,'Iowan Old Style',serif;font-weight:500;font-style:normal;font-size:2.4em;line-height:1.1;margin:0 0 .3em;text-transform:none;color:#1B2430}
+.eyebrow,h2{font-family:-apple-system,system-ui,'Helvetica Neue',sans-serif;font-size:.7em;letter-spacing:.12em;text-transform:uppercase;color:#586170;font-weight:500}
+.eyebrow{margin-bottom:1.4em}.lead{color:#586170}
+h2{margin:2.3em 0 .6em;padding-top:1.2em;border-top:1px solid #B9AF98}
+a{color:#B3321A}p{margin:.5em 0}strong{color:#1B2430}
+.fleuron{height:4px;background:#B3321A;width:120px;margin:2.4em 0;border-radius:4px}
+footer{margin-top:3em;font-family:-apple-system,system-ui,'Helvetica Neue',sans-serif;font-size:.78em;color:#586170;border-top:1px solid #B9AF98;padding-top:1em}
+hr,.divider{background:#B3321A}h2{border-top:3px double #B9AF98;padding-top:.7em}@media (prefers-color-scheme: dark){body{background:#0E1822;color:#EDE6D3}a{color:#F0A83A}h2{border-top-color:#3A4D5F}.lead,footer{color:#9FABB8}}</style></head><body>
+<div class=eyebrow>mizzle · privacy</div><h1>Mizzle: Weather With a Voice</h1><p class=lead>A forecast that has a voice</p>
+<h2>What Mizzle sends</h2>
+<p>There is no account to create, no advertising, no analytics SDK and no tracking across apps or websites. Your places, voice, units and settings stay on your Mac.</p>
+<h2>Weather and places</h2>
+<p><strong>Apple Weather</strong> (Apple WeatherKit) provides the forecast. To get it, Mizzle sends Apple the coordinates of your chosen place, rounded to about one kilometre. A city you type is looked up by Apple's geocoder (MapKit). If you press "Use my location", macOS asks your permission once and Mizzle uses it only to find your place; you can always type a city instead and never share your location. Weather data is provided under Apple's terms; see <a href='https://weatherkit.apple.com/legal-attribution.html'>other data sources</a>.</p>
+<h2>The forecast line</h2>
+<p>By default the line under the temperature is written on your Mac and nothing about it is sent anywhere. In a later version you may be able to turn on AI-written lines, with your explicit permission in Settings. When that is on, Mizzle asks our server to write the line. The request contains only <strong>weather numbers</strong> (condition, temperatures, chance of rain, wind, UV), the chosen voice and your unit, plus a <strong>random anonymous identifier</strong> the app creates (not linked to your name, email, Apple Account or advertising identifier). It never contains your place, coordinates or anything you typed.</p>
+<h2>Who processes it (only when AI-written lines are on)</h2>
+<p><strong>Supabase</strong> (anonymous sign-in and usage counters, so we can limit requests and control cost). <strong>Cloudflare</strong> (our server runs on Cloudflare Workers, and requests pass through Cloudflare AI Gateway, which keeps request and response logs for monitoring). <strong>OpenAI</strong> (writes the line from the weather numbers; under OpenAI's API terms, API data is not used to train its models by default). <strong>Apple</strong> (Apple Weather for the forecast, as above, and StoreKit for purchases). Like any web request, these providers also see your IP address in transit.</p>
+<h2>AI-written text</h2>
+<p>Lines are playful and can be wrong. Every line is checked on your Mac against the weather data (rain, sun, temperature, wind, numbers) and is replaced by a plain factual line if it fails. In severe weather the voice is switched off. Lines are not safety advice.</p>
+<h2>Deleting your data</h2>
+<p>The anonymous identifier is not tied to a person. To have it and its usage records deleted, email the address below with the date you first used the app and we will remove what we can match. Deleting the app removes everything stored on your Mac.</p>
+
+<h2>What it uses on your iPhone</h2><p>Mizzle asks for your location only if you press Use my location, to find the weather where you are. It is never sent to us, and you can turn it off in System Settings, or just type a city. None of it is ever sent to us, and you can turn access off at any time in Settings.</p>
+<h2>Purchases</h2><p>In-app purchases are handled by Apple. We receive no personal information about you from a purchase.</p>
+<h2>Apple services</h2><p>Maps and street-level imagery are loaded by Apple Maps under <a href='https://www.apple.com/legal/privacy/'>Apple's privacy policy</a>. </p>
+
+<div class=fleuron></div>
+<h2>Contact</h2><p>Questions about privacy? Email <a href='mailto:khzorif@gmail.com'>khzorif@gmail.com</a>.</p>
+<footer>Firoz Khan · <a href='mailto:khzorif@gmail.com'>khzorif@gmail.com</a> · 4 October 2026</footer></body></html>

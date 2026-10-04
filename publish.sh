@@ -24,6 +24,7 @@ elif grep -rqs "UsageDescription" "$APP/project.yml" "$APP"/Sources/*/Info.plist
   echo "pages: app declares a permission (UsageDescription) but $M/privacy_access.txt is missing — write one sentence saying what it uses and why"; exit 1
 fi
 grep -qs "recurringSubscriptionPeriod" "$APP"/Sources/*/*.storekit && ARGS+=(--subscription)
+grep -qs "ServerKit" "$APP/project.yml" && ARGS+=(--server)
 grep -rqsE "^import MapKit|MKMapView|LookAround" "$APP/Sources" && ARGS+=(--maps)
 grep -rqsE "^import AppIntents|AppShortcutsProvider" "$APP/Sources" && ARGS+=(--intents)
 

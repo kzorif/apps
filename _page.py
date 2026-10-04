@@ -7,6 +7,7 @@ slug, name, blurb = sys.argv[1], sys.argv[2], sys.argv[3]
 theme = sys.argv[sys.argv.index("--theme") + 1] if "--theme" in sys.argv else "braun"
 access = sys.argv[sys.argv.index("--access") + 1] if "--access" in sys.argv else ""
 sub = "--subscription" in sys.argv
+server = "--server" in sys.argv   # apps on the server kit (2026-10-04, the-eye): names the processors and says what is sent
 # Apple services paragraph only when the app really uses them (2026-09-26: it was on every page, true only for Keep)
 maps, intents = "--maps" in sys.argv, "--intents" in sys.argv
 apple = ("<h2>Apple services</h2><p>" + ("Maps and street-level imagery are loaded by Apple Maps under <a href='https://www.apple.com/legal/privacy/'>Apple's privacy policy</a>. " if maps else "")
@@ -63,12 +64,17 @@ footer{{margin-top:3em;font-family:{fam('label')};font-size:.78em;color:{T['mute
                   divider=T.get("divider_html", "<div class=fleuron></div>"))
     theme = "tokens"
 elif THEMES is None: sys.exit(f"unknown theme {theme!r}")
+SERVER_BLOCK = f"""<h2>What {name.split(':')[0]} sends</h2><p>There is no account to create, no advertising, no analytics SDK and no tracking across apps or websites. Your favourites, reminder time and settings stay on your iPhone.</p>
+<p>When you open a painting's guide, the app asks our server to write it. That request contains the <strong>painting's public museum record</strong> (title, artist, year, medium, museum, accession number, licence) and a <strong>random anonymous identifier</strong> that the app creates for you (it is not linked to your name, email, Apple Account or advertising identifier). Nothing you type is sent, because the app has no text input that goes to the server. If the app is installed without the guide service, nothing is sent at all.</p>
+<h2>Who processes it</h2><p><strong>Supabase</strong> (anonymous sign-in and usage counters, so we can limit requests and control cost). <strong>Cloudflare</strong> (our server runs on Cloudflare Workers, and requests pass through Cloudflare AI Gateway, which keeps request and response logs for monitoring). <strong>OpenAI</strong> (writes the guide text from the museum record; under OpenAI's API terms, API data is not used to train its models by default). Like any web request, these providers also see your IP address in transit.</p>
+<h2>AI-written text</h2><p>Guides are AI-assisted and may contain mistakes. Each guide shows its sources and has a Report a problem button. If the service is unavailable the app shows a guide written by hand instead.</p>
+<h2>Deleting your data</h2><p>The anonymous identifier is not tied to a person. To have it and its usage records deleted, email the address below with the date you first used the app and we will remove what we can match. You can also delete the app, which removes the identifier from your iPhone.</p>"""
 def page(title, eyebrow, body):
     return f"""<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>{title} · {name}</title><style>{THEMES['css']}</style></head><body>
 <div class=eyebrow>{eyebrow}</div><h1>{name}</h1><p class=lead>{blurb}</p>{body}
 <footer>Firoz Khan · <a href='mailto:{email}'>{email}</a> · {today}</footer></body></html>"""
 privacy = page("Privacy", THEMES["eyebrow_privacy"], f"""
-<h2>What {name.split(':')[0]} collects</h2><p>Nothing. There is no account, no analytics, no advertising and no tracking. Nothing you do in the app is sent anywhere. It stays on your device.</p>
+{SERVER_BLOCK if server else f"<h2>What {name.split(':')[0]} collects</h2><p>Nothing. There is no account, no analytics, no advertising and no tracking. Nothing you do in the app is sent anywhere. It stays on your device.</p>"}
 {f"<h2>What it uses on your iPhone</h2><p>{access} None of it is ever sent to us, and you can turn access off at any time in Settings.</p>" if access else ""}
 <h2>Purchases</h2><p>In-app purchases are handled by Apple. We receive no personal information about you from a purchase.</p>
 {apple}
